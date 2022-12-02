@@ -210,6 +210,20 @@ void juntarPaginasEmSaida(FILE * saida, registro * PaginaA, registro * PaginaB, 
     }
 }
 
+int carregarPagina(FILE * arquivo, registro * Pagina, int QuantidadePorPagina){
+    int ret= 0;
+    int QuantidadeLida = 0;
+    for(int i =0; i < QuantidadePorPagina; i++){
+        if(ret = fread(&Pagina[i], sizeof(registro), 1, arquivo))
+            if(ret > 0)
+                QuantidadeLida++;
+        else
+            break;
+    }
+
+    return QuantidadeLida;
+}
+
 int main(int argc, char * argv[])
 {
     if(argc != 4){
@@ -239,36 +253,14 @@ int main(int argc, char * argv[])
     int QTD_PaginaC = 0;
     int ret = 0;
 
-    //ler a entrada e colocar nas paginas ordernar no arquivo da pagina ordenada
-    for(int i = 0; i < QuantidadePorPagina; i++){
-        if(ret = fread(&paginaA[i], sizeof(registro), 1, entrada))
-            if(ret > 0)
-                QTD_PaginaA++;
-        else
-            break;
-    }
+    //Leitura das paginas, ordenação e escrita no arquivo de pagina. Utilizando da PaginaA e PaginaB para ordenação
+    QTD_PaginaA = carregarPagina(entrada, paginaA, QuantidadePorPagina);
     FILE * PaginaAOrganizada = mergeSortExterno(paginaA, QTD_PaginaA, paginaB, "PaginaA.bin");
 
-    //ler a entrada e colocar nas paginas ordernar no arquivo da pagina ordenada
-    for(int i = 0; i < QuantidadePorPagina; i++){
-
-        if(ret = fread(&paginaA[i], sizeof(registro), 1, entrada))
-            if(ret > 0)
-                QTD_PaginaB++;
-        else
-            break;
-    }
+    QTD_PaginaB = carregarPagina(entrada, paginaA, QuantidadePorPagina);
     FILE * PaginaBOrganizada = mergeSortExterno(paginaA, QTD_PaginaB, paginaB, "PaginaB.bin");
 
-    //ler a entrada e colocar nas paginas ordernar no arquivo da pagina ordenada
-    for(int i = 0; i < QuantidadePorPagina; i++){
-
-        if(fread(&paginaA[i], sizeof(registro), 1, entrada))
-            if(ret > 0)
-                QTD_PaginaC++;
-        else
-            break;
-    }
+    QTD_PaginaC = carregarPagina(entrada, paginaA, QuantidadePorPagina);
     FILE * PaginaCOrganizada = mergeSortExterno(paginaA, QTD_PaginaC, paginaB, "PaginaC.bin");
 
 
