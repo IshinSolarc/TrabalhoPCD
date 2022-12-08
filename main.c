@@ -8,25 +8,6 @@ typedef struct registro{
     int idade;   
 } registro;
 
-//Descrição do código:
-// compara os três registros e retorna alfabeticamente o menor, se forem iguais, retorna o de menor idade
-registro * comparaTresReg(registro * Reg1, registro * Reg2, registro * Reg3) {
-    registro * menor;
-    if(strcmp(Reg1->nome, Reg2->nome) < 0){
-        if(strcmp(Reg1->nome, Reg3->nome) < 0){
-            menor = Reg1;
-        }else{
-            menor = Reg3;
-        }
-    }else{
-        if(strcmp(Reg2->nome, Reg3->nome) < 0){
-            menor = Reg2;
-        }else{
-            menor = Reg3;
-        }
-    }
-    return menor;
-}
 
 //Descrição do código:
 //// compara os dois registros e retorna alfabeticamente o menor, se forem iguais, retorna o de menor idade
@@ -47,6 +28,16 @@ registro * comparaDoisReg(registro * Reg1, registro * Reg2){
             menor = Reg1;
         }
     }
+    return menor;
+}
+
+//Descrição do código:
+// compara os três registros e retorna alfabeticamente o menor, se forem iguais, retorna o de menor idade
+registro * comparaTresReg(registro * Reg1, registro * Reg2, registro * Reg3) {
+    registro * menor;
+    menor = comparaDoisReg(Reg1, Reg2);
+    menor = comparaDoisReg(menor, Reg3);
+    
     return menor;
 }
 
@@ -73,7 +64,7 @@ FILE * mergeSortExterno(registro * Pagina, int QuantidadePorPagina, registro * P
                 }
         }
 
-
+        //index para armazenar a posição do "vetor" organizado
         int index = 0;
         for(int DobraAtual = 0; DobraAtual < Dobras; DobraAtual += 2){
 
@@ -230,28 +221,23 @@ int main(int argc, char * argv[])
         return 0;
     }
 
-    registro * paginaA = NULL;
-    registro * paginaB = NULL;
-    registro * paginaC = NULL;
-
     //entrada em binario
     FILE * entrada = fopen(argv[1], "rb");
-    //saida em texto
+    //saida em binario
     FILE * saida = fopen(argv[2], "wb");
     
     int QuantidadePorPagina = atoi(argv[3]);
 
 
     //alocar memoria para as paginas
-    paginaA = (registro *) malloc(QuantidadePorPagina * sizeof(registro));
-    paginaB = (registro *) malloc(QuantidadePorPagina * sizeof(registro));
-    paginaC = (registro *) malloc(QuantidadePorPagina * sizeof(registro));
+    registro * paginaA = (registro *) malloc(QuantidadePorPagina * sizeof(registro));
+    registro * paginaB = (registro *) malloc(QuantidadePorPagina * sizeof(registro));
+    registro * paginaC = (registro *) malloc(QuantidadePorPagina * sizeof(registro));
 
     //variaveis para controle de leitura
     int QTD_PaginaA = 0;
     int QTD_PaginaB = 0;
     int QTD_PaginaC = 0;
-    int ret = 0;
 
     //Leitura das paginas, ordenação e escrita no arquivo de pagina. Utilizando da PaginaA e PaginaB para ordenação
     QTD_PaginaA = carregarPagina(entrada, paginaA, QuantidadePorPagina);
@@ -264,7 +250,7 @@ int main(int argc, char * argv[])
     FILE * PaginaCOrganizada = mergeSortExterno(paginaA, QTD_PaginaC, paginaB, "PaginaC.bin");
 
 
-    //Leitura das paginas organizadas na memoria
+    //Leitura das paginas organizadas para a memoria
     fread(paginaA, sizeof(registro), QTD_PaginaA, PaginaAOrganizada);
     fread(paginaB, sizeof(registro), QTD_PaginaB, PaginaBOrganizada);
     fread(paginaC, sizeof(registro), QTD_PaginaC, PaginaCOrganizada);
